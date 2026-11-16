@@ -1,0 +1,13 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Maven build outputs
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# OS & Logs
+.DS_Store
+Thumbs.db
+*.log

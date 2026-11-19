@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RideReqeustedEvent {
+public class RideRequestedEvent {
 
     private String rideId;
     private String riderId;
@@ -25,9 +25,9 @@ public class RideReqeustedEvent {
 
     // Drop
 
-    private double DropLatitude;
-    private double DropLongitude;
-    private String DropAddress;
+    private double dropLatitude;
+    private double dropLongitude;
+    private String dropAddress;
 
 
 }

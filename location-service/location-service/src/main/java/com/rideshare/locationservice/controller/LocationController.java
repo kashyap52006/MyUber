@@ -38,9 +38,9 @@ public class LocationController {
     }
 
     // when driver goes offline
-    @DeleteMapping
-    public ResponseEntity<String>RemoveDriver(@PathVariable String driverId){
-        locationService.RemoveDriver(driverId);
+    @DeleteMapping("/drivers/{driverId}")
+    public ResponseEntity<String> removeDriver(@PathVariable String driverId){
+        locationService.removeDriver(driverId);
         return ResponseEntity.ok("Driver removed successfully");
     }
 

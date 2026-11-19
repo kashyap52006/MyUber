@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "rides")
@@ -17,15 +17,14 @@ import java.time.LocalDateTime;
 public class Ride {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
+    @GeneratedValue
     private String id;
 
     //who reqeusted the ride
     @Column(nullable = false)
     private String riderId;
 
-    //who accepted the ride
-    @Column(nullable = false)
     private String driverId;
 
     @Column(nullable = false)

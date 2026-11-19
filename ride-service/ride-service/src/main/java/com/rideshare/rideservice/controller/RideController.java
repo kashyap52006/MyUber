@@ -6,7 +6,6 @@ import com.rideshare.rideservice.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +38,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getRideById(rideId));
     }
 
-    @GetMapping("/rider/{rideId}")
+    @GetMapping("/rider/{riderId}")
     public ResponseEntity<List<RideResponse>> getRidesByRider(
             @PathVariable String riderId
     ){

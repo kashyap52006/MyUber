@@ -2,7 +2,7 @@ package com.rideshare.rideservice.service;
 
 import com.rideshare.rideservice.dto.RideRequest;
 import com.rideshare.rideservice.dto.RideResponse;
-import com.rideshare.rideservice.event.RideReqeustedEvent;
+import com.rideshare.rideservice.event.RideRequestedEvent;
 import com.rideshare.rideservice.model.Ride;
 import com.rideshare.rideservice.model.RideStatus;
 import com.rideshare.rideservice.repository.RideRepository;
@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RideService {
 
-    private RideRepository rideRepository;
-    private KafkaTemplate<String , RideReqeustedEvent> kafkaTemplate;
+    private final RideRepository rideRepository;
+    private final KafkaTemplate<String, RideRequestedEvent> kafkaTemplate;
     private static final String RIDE_REQUESTED_TOPIC = "ride.requested";
 
     /*
@@ -47,7 +47,7 @@ public class RideService {
         // step 2 publish event to kafka
         //matching service will consume this and find nearest driver
 
-        RideReqeustedEvent event = new RideReqeustedEvent(
+        RideRequestedEvent event = new RideRequestedEvent(
                 saveRide.getId(),
                 saveRide.getRiderId(),
                 saveRide.getPickupLatitude(),
@@ -71,11 +71,11 @@ public class RideService {
     }
 
     // to update status to ACCEPTED when driver accepts the request
-    public void updateRideWithDriver(String rideId , String DriverId){
+    public void updateRideWithDriver(String rideId, String driverId){
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
 
-        ride.setDriverId(DriverId);
+        ride.setDriverId(driverId);
         ride.setStatus(RideStatus.ACCEPTED);
         rideRepository.save(ride);
 
@@ -115,8 +115,9 @@ public class RideService {
     public RideResponse cancelRide(String rideId){
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
-        if(ride.getStatus() != RideStatus.RIDE_STARTED){
-            throw new RuntimeException("Ride cannot be completed. Current status : " + ride.getStatus());
+        if(ride.getStatus() == RideStatus.COMPLETED
+                || ride.getStatus() == RideStatus.CANCELLED){
+            throw new RuntimeException("Ride cannot be cancelled. Current status : " + ride.getStatus());
 
         }
         ride.setStatus(RideStatus.CANCELLED);
@@ -136,7 +137,7 @@ public class RideService {
     }
 
     public List<RideResponse> getRidesByRider(String riderId){
-        return rideRepository.findByRiderIdOrderByCreatedDesc(riderId)
+        return rideRepository.findByRiderIdOrderByCreatedAtDesc(riderId)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -150,7 +151,7 @@ public class RideService {
         double lon2 = Math.toRadians(request.getDropLongitude());
 
         double dLat = lat2-lat1;
-        double dLon = lon2 - lon2;
+        double dLon = lon2 - lon1;
 
         double a =Math.pow(Math.sin(dLat / 2), 2)
                 +Math.cos(lat1) * Math.cos(lat2)
